@@ -54,7 +54,8 @@ class Title(models.Model):
     description = models.CharField(
         'Описание',
         blank=True,
-        null=True
+        null=True,
+        max_length=256
     )
     genre = models.ManyToManyField(
         Genre,
@@ -63,7 +64,7 @@ class Title(models.Model):
     category = models.ForeignKey(
         Category,
         related_name='titles',
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         blank=True
     )
 
