@@ -54,7 +54,8 @@ class Title(models.Model):
     description = models.CharField(
         'Описание',
         blank=True,
-        null=True
+        null=True,
+        max_length=256
     )
     genre = models.ManyToManyField(
         Genre,
