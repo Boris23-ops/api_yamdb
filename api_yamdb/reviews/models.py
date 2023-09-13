@@ -63,6 +63,7 @@ class Title(models.Model):
     )
     category = models.ForeignKey(
         Category,
+        null=True,
         related_name='titles',
         on_delete=models.SET_NULL,
         blank=True
