@@ -59,6 +59,7 @@ class Title(models.Model):
     )
     description = models.CharField(
         'Описание',
+        max_length=255,
         blank=True,
         null=True
     )
@@ -70,6 +71,7 @@ class Title(models.Model):
         Category,
         related_name='titles',
         on_delete=models.SET_NULL,
+        null=True,
         blank=True
     )
 
