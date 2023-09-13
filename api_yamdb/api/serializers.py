@@ -4,17 +4,26 @@ from reviews.models import Category, Genre, Title
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериалтзатор Категории"""
-    model = Category
-    pass
+
+    class Meta:
+        fields = ('name', 'slug')
+        model = Category
+        lookup_field = 'slug'
+
 
 
 class GenreSerializer(serializers.ModelSerializer):
     """Сериалтзатор Жанра"""
-    model = Genre
-    pass
+
+    class Meta:
+        fields = ('name', 'slug')
+        model = Genre
+        lookup_field = 'slug'
 
 
 class TitleSerializer(serializers.ModelSerializer):
     """Сериалтзатор Произведения"""
-    model = Title
-    pass
+    
+    class Meta:
+        model = Title
+
