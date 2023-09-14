@@ -84,7 +84,7 @@ class Title(models.Model):
 
 class Review(models.Model):
     """Модель Ревью"""
-    titles = models.ForeignKey(
+    title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE
     )
@@ -100,7 +100,7 @@ class Review(models.Model):
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
 
     class Meta:
-        unique_together = ('author', 'titles')
+        unique_together = ('author', 'title')
         default_related_name = 'reviews'
         ordering = ['pub_date']
 

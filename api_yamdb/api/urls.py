@@ -13,8 +13,8 @@ app_name = 'api'
 
 router_v1 = DefaultRouter()
 router_v1.register('categories', CategoryViewSet, basename='categories')
-router_v1.register('genre', GenreViewSet, basename='genre')
-router_v1.register('title', TitleViewSet, basename='title')
+router_v1.register('genres', GenreViewSet, basename='genres')
+router_v1.register('titles', TitleViewSet, basename='titles')
 router_v1.register(
     r'titles/(?P<title_id>\d+)/reviews',
     ReviewViewSet,
