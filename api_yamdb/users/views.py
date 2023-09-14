@@ -5,10 +5,16 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from users.models import User
-from users.serializers import UserSerializer, UserMeSerializer, TokenSerializer
+from users.serializers import (
+    UserSerializer,
+    UserMeSerializer,
+    SignUpSerializer,
+    TokenSerializer
+)
 from users.permission import IsAdmin
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.permissions import IsAuthenticated
+from .utils import send_confirmation_code
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -30,6 +36,27 @@ class UserMeView(APIView):
     def get(self, request):
         serializer = UserMeSerializer(request.user)
         return Response(serializer.data, status=HTTP_200_OK)
+
+
+class SignUp(APIView):
+    """Вью-функция для регистрации и подтвердения по почте."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        if User.objects.filter(
+            username=request.data.get('username'),
+            email=request.data.get('email')
+        ).exists():
+            send_confirmation_code(request)
+            return Response(request.data, status=HTTP_200_OK)
+
+        serializer = SignUpSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(username=request.data.get('username'))
+            send_confirmation_code(request)
+            return Response(serializer.data, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class Token(APIView):

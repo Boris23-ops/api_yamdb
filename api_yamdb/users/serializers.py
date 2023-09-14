@@ -1,6 +1,7 @@
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
 from users.models import User
+from django.core.validators import RegexValidator
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -20,6 +21,16 @@ class UserMeSerializer(UserSerializer):
 class SignUpSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации."""
 
+    email = serializers.EmailField(
+        required=True,
+        max_length=254,
+    )
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[RegexValidator(regex=r'^[\w.@+-]+$')]
+    )
+
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(
@@ -28,7 +39,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('email', 'username')
+        fields = ('id', 'email', 'username')
 
 
 class TokenSerializer(serializers.ModelSerializer):
