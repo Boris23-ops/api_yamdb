@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserMeSerializer(serializers.UserSerializer):
+class UserMeSerializer(UserSerializer):
     """Сериализатор для текущего пользователя."""
 
     role = serializers.CharField(read_only=True)

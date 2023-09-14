@@ -7,6 +7,7 @@ from users.models import User
 from users.serializers import UserSerializer, UserMeSerializer
 from users.permission import IsAdmin, IsAuthenticated
 
+
 class UserViewSet(viewsets.ModelViewSet):
     """Вьюсет для работы с пользователями."""
 
@@ -23,7 +24,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class UserMeView(APIView):
     """Вью-функция для работы с текущим пользователем."""
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         serializer = UserMeSerializer(request.user)

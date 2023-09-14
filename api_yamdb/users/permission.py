@@ -22,7 +22,7 @@ class IsAdminOrSafeMethods(IsAdmin):
 
 class IsAuthor(permissions.IsAuthenticatedOrReadOnly):
     """Проверка доступа: автор или модератор."""
-    
+
     message = 'Доступно автору или модератору.'
 
     def has_object_permission(self, request, view, obj):
