@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from users.models import User
 
+
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователей."""
 
@@ -17,7 +18,7 @@ class UserMeSerializer(serializers.UserSerializer):
 
 class SignUpSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации."""
-    
+
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(

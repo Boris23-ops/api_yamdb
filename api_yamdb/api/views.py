@@ -1,27 +1,27 @@
+from django.db.models import Avg
 from rest_framework import viewsets, filters
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import (PageNumberPagination,
                                        LimitOffsetPagination)
 from django.shortcuts import get_object_or_404
 
+from .filter import TitleFilter
 from reviews.models import Category, Genre, Review, Title
 from .serializers import (
     CategorySerializer,
     CommentSerializer,
     GenreSerializer,
     ReviewSerializer,
-    TitleSerializer
+    TitleSerializer,
+    TitleSaveSerializer
 )
-from .permissions import IsAdminOrReadOnly
+from .permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
     """Вьюсет Категории"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAdminOrReadOnly)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ['name', ]
-    lookup_field = 'slug'
     pagination_class = PageNumberPagination
 
 
@@ -29,50 +29,53 @@ class GenreViewSet(viewsets.ModelViewSet):
     """Вьюсет Жанра"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-    permission_classes = (IsAdminOrReadOnly)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ['name', ]
-    lookup_field = 'slug'
     pagination_class = PageNumberPagination
 
 
 class TitleViewSet(viewsets.ModelViewSet):
     """Вьюсет Произведения"""
-    queryset = Title.objects.all()
-    serializer_class = TitleSerializer
+    queryset = Title.objects.all().annotate(rating=Avg('reviews__score'))
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ['name', ]
-    lookup_field = 'slug'
-    pagination_class = PageNumberPagination
+    filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
+    filterset_class = TitleFilter
+    ordering_fields = ('rating',)
+
+    def get_serializer_class(self):
+        if self.action in ('list', 'retrive'):
+            return TitleSerializer
+        return TitleSaveSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет Ревью"""
-    # permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly)
     serializer_class = ReviewSerializer
+    permission_classes = (IsOwnerOrAdminOrReadOnly, )
     pagination_class = LimitOffsetPagination
 
-    def get_title(self):
-        return get_object_or_404(Title, pk=self.kwargs['title_id'])
-
     def get_queryset(self):
-        return self.get_title().reviews.all().select_related('author')
+        title_id = self.kwargs.get('title_id')
+        title = get_object_or_404(Title, pk=title_id)
+        return title.reviews.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, titles=self.get_title())
+        title_id = self.kwargs.get('title_id')
+        title = get_object_or_404(Title, pk=title_id)
+        serializer.save(author=self.request.user, title=title)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет Комментария"""
-    # permission_classes = (IsAuthorOrReadOnly, IsAuthenticatedOrReadOnly)
+    permission_classes = (IsOwnerOrAdminOrReadOnly, )
     serializer_class = CommentSerializer
 
-    def get_review(self):
-        return get_object_or_404(Review, pk=self.kwargs['review_id'])
-
     def get_queryset(self):
-        return self.get_review().comments.all()
+        title_id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, pk=review_id, title__id=title_id)
+        return review.comments.all()
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, review=self.get_review())
+        title_id = self.kwargs.get('title_id')
+        review_id = self.kwargs.get('review_id')
+        review = get_object_or_404(Review, pk=review_id, title__id=title_id)
+        serializer.save(author=self.request.user, review=review)

@@ -8,12 +8,10 @@ from api.views import (
     ReviewViewSet,
     TitleViewSet
 )
-from users.views import UserViewSet
 
 app_name = 'api'
 
 router_v1 = DefaultRouter()
-router_v1.register('users', UserViewSet)
 router_v1.register('categories', CategoryViewSet, basename='categories')
 router_v1.register('genre', GenreViewSet, basename='genre')
 router_v1.register('title', TitleViewSet, basename='title')
@@ -29,5 +27,6 @@ router_v1.register(
 )
 
 urlpatterns = [
+    path('v1/', include('users.urls')),
     path('v1/', include(router_v1.urls)),
 ]

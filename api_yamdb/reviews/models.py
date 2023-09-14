@@ -83,26 +83,33 @@ class Title(models.Model):
 
 
 class Review(models.Model):
-    text = models.TextField()
+    """Модель Ревью"""
+    titles = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE
+    )
+    text = models.CharField(
+        verbose_name='Текст отзыва',
+        max_length=2048
+    )
+    author = models.ForeignKey(
+        User, on_delete=models.CASCADE)
     score = models.IntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
     pub_date = models.DateTimeField('Дата публикации', auto_now_add=True)
-    author = models.ForeignKey(
-        User, on_delete=models.CASCADE)
-    titles = models.ForeignKey(
-        Title, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('author', 'titles')
         default_related_name = 'reviews'
-        ordering = ['-pub_date']
+        ordering = ['pub_date']
 
     def __str__(self):
-        return self.text[:MAX_TITLE_LENGTH]
+        return f'Отзыв {self.author} на {self.title.name}'
 
 
 class Comment(models.Model):
+    """Модель комментария"""
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)
     review = models.ForeignKey(
@@ -112,7 +119,7 @@ class Comment(models.Model):
         'Дата добавления', auto_now_add=True, db_index=True)
 
     class Meta:
-        ordering = ('id', )
+        ordering = ['pub_date']
         default_related_name = 'comments'
 
     def __str__(self):
