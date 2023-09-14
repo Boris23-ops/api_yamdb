@@ -1,3 +1,4 @@
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from rest_framework import serializers
 from users.models import User
 
@@ -22,9 +23,26 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate_username(self, value):
         if value == 'me':
             raise serializers.ValidationError(
-                'Использовать имя _me_ в качестве username запрещено.'
+                "Использовать имя 'me' в качестве username запрещено."
             )
 
     class Meta:
         model = User
         fields = ('email', 'username')
+
+
+class TokenSerializer(serializers.ModelSerializer):
+    """Cериалайзер для получения токена."""
+
+    username = serializers.CharField(
+        required=True,
+        max_length=150,
+        validators=[
+            UnicodeUsernameValidator,
+        ],
+    )
+    confirmation_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')
