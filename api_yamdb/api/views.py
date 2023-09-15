@@ -39,6 +39,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = TitleFilter
     ordering_fields = ('rating',)
+    pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrive'):
@@ -67,6 +68,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """Вьюсет Комментария"""
     permission_classes = (IsOwnerOrAdminOrReadOnly, )
     serializer_class = CommentSerializer
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')

@@ -4,14 +4,15 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
-from users.models import User
-from users.serializers import (
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from .models import User
+from .serializers import (
     UserSerializer,
     UserMeSerializer,
     SignUpSerializer,
     TokenSerializer
 )
-from users.permission import IsAdmin
+from .permission import IsAdmin
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.permissions import IsAuthenticated
 from .utils import send_confirmation_code
@@ -41,7 +42,7 @@ class UserMeView(APIView):
 class SignUp(APIView):
     """Вью-функция для регистрации и подтвердения по почте."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def post(self, request):
         if User.objects.filter(
