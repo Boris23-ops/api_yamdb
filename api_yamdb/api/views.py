@@ -98,3 +98,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         review_id = self.kwargs.get('review_id')
         review = get_object_or_404(Review, pk=review_id, title__id=title_id)
         serializer.save(author=self.request.user, review=review)
+
+    def update(self, request, *args, **kwargs):
+        # Проверяем, что метод запроса не является PUT
+        if request.method == 'PUT':
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().update(request, *args, **kwargs)
