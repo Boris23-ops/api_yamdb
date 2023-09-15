@@ -20,7 +20,6 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Genre
-        lookup_field = 'slug'
 
 
 class TitleSaveSerializer(serializers.ModelSerializer):
@@ -55,7 +54,10 @@ class TitleSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(serializers.ModelSerializer):
     """Сериализатор Ревью"""
-    author = SlugRelatedField(slug_field='username', read_only=True)
+    author = SlugRelatedField(
+        slug_field='username',
+        read_only=True,
+    )
 
     class Meta:
         fields = ('id', 'text', 'author', 'score', 'pub_date')

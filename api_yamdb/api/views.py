@@ -1,5 +1,5 @@
 from django.db.models import Avg
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import (PageNumberPagination,
                                        LimitOffsetPagination)
@@ -18,14 +18,23 @@ from .serializers import (
 from .permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
 
-class CategoryViewSet(viewsets.ModelViewSet):
+class ListCreateDestroyViewSet(mixins.ListModelMixin,
+                               mixins.CreateModelMixin,
+                               mixins.DestroyModelMixin,
+                               viewsets.GenericViewSet):
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    search_fields = ('name',)
+    lookup_field = 'slug'
+
+
+class CategoryViewSet(ListCreateDestroyViewSet):
     """Вьюсет Категории"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    pagination_class = PageNumberPagination
 
 
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(ListCreateDestroyViewSet):
     """Вьюсет Жанра"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
