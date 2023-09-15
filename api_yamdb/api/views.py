@@ -1,5 +1,7 @@
 from django.db.models import Avg
-from rest_framework import viewsets, filters, mixins
+from rest_framework import viewsets, filters, mixins, status
+from rest_framework.decorators import action, permission_classes
+from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.pagination import (PageNumberPagination,
                                        LimitOffsetPagination)
@@ -60,7 +62,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     """Вьюсет Ревью"""
     serializer_class = ReviewSerializer
     permission_classes = (IsOwnerOrAdminOrReadOnly, )
-    pagination_class = LimitOffsetPagination
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         title_id = self.kwargs.get('title_id')
@@ -71,6 +73,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
         title_id = self.kwargs.get('title_id')
         title = get_object_or_404(Title, pk=title_id)
         serializer.save(author=self.request.user, title=title)
+
+    def update(self, request, *args, **kwargs):
+        # Проверяем, что метод запроса не является PUT
+        if request.method == 'PUT':
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().update(request, *args, **kwargs)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
