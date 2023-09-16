@@ -1,10 +1,8 @@
 from django.db.models import Avg
 from rest_framework import viewsets, filters, mixins, status
-from rest_framework.decorators import action, permission_classes
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.pagination import (PageNumberPagination,
-                                       LimitOffsetPagination)
+from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 
 from .filter import TitleFilter
@@ -53,9 +51,15 @@ class TitleViewSet(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
-        if self.action in ('list', 'retrive'):
+        if self.action in ('list', 'retrieve'):
             return TitleSerializer
         return TitleSaveSerializer
+
+    def update(self, request, *args, **kwargs):
+        # Проверяем, что метод запроса не является PUT
+        if request.method == 'PUT':
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().update(request, *args, **kwargs)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
