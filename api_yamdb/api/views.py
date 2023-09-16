@@ -56,7 +56,6 @@ class TitleViewSet(viewsets.ModelViewSet):
         return TitleSaveSerializer
 
     def update(self, request, *args, **kwargs):
-        # Проверяем, что метод запроса не является PUT
         if request.method == 'PUT':
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().update(request, *args, **kwargs)
@@ -79,7 +78,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, title=title)
 
     def update(self, request, *args, **kwargs):
-        # Проверяем, что метод запроса не является PUT
         if request.method == 'PUT':
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().update(request, *args, **kwargs)
@@ -104,7 +102,6 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, review=review)
 
     def update(self, request, *args, **kwargs):
-        # Проверяем, что метод запроса не является PUT
         if request.method == 'PUT':
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return super().update(request, *args, **kwargs)

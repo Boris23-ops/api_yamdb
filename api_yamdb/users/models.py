@@ -24,6 +24,7 @@ class User(AbstractUser):
             'unique': 'Пользователь с такой почтой уже существует.'
         }
     )
+    confirmation_code = models.CharField(max_length=255, blank=True, null=True)
 
     @property
     def is_admin(self):

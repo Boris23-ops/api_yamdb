@@ -1,3 +1,4 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
@@ -45,18 +46,18 @@ class SignUp(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        if User.objects.filter(
-            username=request.data.get('username'),
-            email=request.data.get('email')
-        ).exists():
-            send_confirmation_code(request)
-            return Response(request.data, status=HTTP_200_OK)
-
         serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(username=request.data.get('username'))
-            send_confirmation_code(request)
-            return Response(serializer.data, status=HTTP_200_OK)
+            username = request.data.get('username')
+            email = request.data.get('email')
+            user, created = User.objects.get_or_create(
+                username=username,
+                email=email
+            )
+            user.confirmation_code = default_token_generator.make_token(user)
+            user.save()
+            send_confirmation_code(user)
+            return Response(request.data, status=HTTP_200_OK)
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
@@ -77,6 +78,8 @@ class Token(APIView):
         user = get_object_or_404(User, username=username)
         if self.check_confirmation_code(user, confirmation_code):
             token = AccessToken.for_user(user)
+            user.confirmation_code = None
+            user.save()
             return Response({'token': f'{token}'}, status=HTTP_200_OK)
         return Response(
             {'confirmation_code': ['Код не действителен!']},
