@@ -9,7 +9,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.permissions import IsAuthenticated
+
 from users.models import User
 from users.serializers import (
     UserSerializer,
@@ -35,7 +35,7 @@ class UserViewSet(viewsets.ModelViewSet):
     http_method_names = ('get', 'post', 'patch', 'delete')
 
     @action(
-        methods=["GET", "PATCH"],
+        methods=["get", "patch"],
         detail=False,
         permission_classes=(IsAuthenticated,),
         url_path="me",
@@ -100,7 +100,7 @@ class SignUp(APIView):
 class Token(APIView):
     """Вьюсет для получения токена."""
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     @staticmethod
     def check_confirmation_code(user, confirmation_code):
