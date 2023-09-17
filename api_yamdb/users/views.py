@@ -8,17 +8,17 @@ from rest_framework.status import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
-from .models import User
-from .serializers import (
+from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework.permissions import IsAuthenticated
+from users.models import User
+from users.serializers import (
     UserSerializer,
     UserMeSerializer,
     SignUpSerializer,
-    TokenSerializer
+    TokenSerializer,
 )
-from .permission import IsAdmin
-from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.permissions import IsAuthenticated
-from .utils import send_confirmation_code
+from users.permission import IsAdmin
+from users.utils import send_confirmation_code
 
 
 class UserViewSet(viewsets.ModelViewSet):

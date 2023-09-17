@@ -9,6 +9,7 @@ User = get_user_model()
 
 class Category(models.Model):
     """Модель категории"""
+
     name = models.CharField(
         'Название',
         max_length=256,
@@ -29,6 +30,7 @@ class Category(models.Model):
 
 class Genre(models.Model):
     """Модель жанра"""
+
     name = models.CharField(
         'Название',
         max_length=100,
@@ -49,6 +51,7 @@ class Genre(models.Model):
 
 class Title(models.Model):
     """Модель произведения"""
+
     name = models.CharField(
         'Название',
         max_length=256,
@@ -84,6 +87,7 @@ class Title(models.Model):
 
 class Review(models.Model):
     """Модель Ревью"""
+
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE
@@ -110,6 +114,7 @@ class Review(models.Model):
 
 class Comment(models.Model):
     """Модель комментария"""
+
     author = models.ForeignKey(
         User, on_delete=models.CASCADE)
     review = models.ForeignKey(
