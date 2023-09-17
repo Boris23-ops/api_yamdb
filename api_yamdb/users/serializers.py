@@ -36,6 +36,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 "Использовать имя 'me' в качестве username запрещено."
             )
+        return value
 
     class Meta:
         model = User
