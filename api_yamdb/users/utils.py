@@ -1,11 +1,25 @@
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
-def send_confirmation_code(user):
-    """Функция для получения кода подтверждения по почте."""
+def generate_and_send_confrimation_code(user, data):
+    """Генерация кода подтверждения и его отправка."""
+    token = default_token_generator.make_token(user)
     send_mail(
-        'Добро пожаловать в YaMDb, {user.username}!',
-        f'confirmation_code: {user.confirmation_code}',
-        'a@yambd.face',
-        [user.email]
+        subject='Confirmation code',
+        message=token,
+        from_email=None,
+        recipient_list=(data.get('email'),)
     )
+
+
+def check_confimation_code(user, confirmation_code):
+    """Проверка кода подтверждения."""
+    return default_token_generator.check_token(user, confirmation_code)
+
+
+def get_jwt_token(user):
+    """Получение JWT токена для пользователя."""
+    refresh = RefreshToken.for_user(user)
+    return str(refresh.access_token)
