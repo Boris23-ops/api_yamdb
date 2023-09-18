@@ -5,9 +5,12 @@ class IsAdmin(permissions.BasePermission):
     """Доступ только для пользователей с ролью admin."""
 
     def has_permission(self, request, view):
+        """Проверяет, имеет ли пользователь разрешение
+        на выполнение запроса."""
         return (request.user.is_authenticated
                 and (request.user.is_admin or request.user.is_staff))
 
     def has_object_permission(self, request, view, obj):
+        """Проверяет, имеет ли пользователь разрешение на доступ к объекту."""
         return (request.user.is_authenticated
                 and (request.user.is_admin or request.user.is_staff))

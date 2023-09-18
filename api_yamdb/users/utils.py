@@ -10,9 +10,9 @@ def generate_and_send_confirmation_code(request):
     """Генерация кода подтверждения и его отправка."""
     user = get_object_or_404(User, username=request.data.get('username'))
     send_mail(
-        'YaMDB. Confirmation code',
+        'Yamdb. Confirmation code',
         f'confirmation_code: {default_token_generator.make_token(user)}',
-        'a@yambd.ru',
+        'a@yambd.face',
         [user.email]
     )
 

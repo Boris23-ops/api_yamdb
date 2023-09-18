@@ -1,23 +1,23 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import OrderingFilter, SearchFilter
 
-from .models import User
-from .serializers import (
-    TokenSerializer,
-    SignUpSerializer,
-    UserSerializer
-)
-from .permission import IsAdmin
-from .utils import generate_and_send_confirmation_code
+from users.models import User
+from users.serializers import TokenSerializer, SignUpSerializer, UserSerializer
+from users.permission import IsAdmin
+from users.utils import generate_and_send_confirmation_code
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """Вьюсет для работы с пользователями."""
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
@@ -60,6 +60,7 @@ class SignUp(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
+        """Обрабатывает POST-запрос для регистрации пользователя."""
         if User.objects.filter(
             username=request.data.get('username'),
             email=request.data.get('email')

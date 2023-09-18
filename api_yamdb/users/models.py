@@ -53,7 +53,6 @@ class User(AbstractUser):
 @receiver(pre_save, sender=User)
 def auto_is_staff(sender, instance, *args, **kwargs):
     """Авто присвоение флага is_staff пользователям с ролью 'admin'."""
-
     if instance.role == User.ADMIN:
         instance.is_staff = True
     elif instance.role == User.USER or User.MODERATOR:
@@ -63,6 +62,5 @@ def auto_is_staff(sender, instance, *args, **kwargs):
 @receiver(pre_save, sender=User)
 def auto_admin_for_superuser(sender, instance, *args, **kwargs):
     """Авто присвоение роли 'admin' суперюзерам."""
-
     if instance.is_superuser:
         instance.role = User.ADMIN

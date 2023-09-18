@@ -2,30 +2,12 @@ from rest_framework import serializers
 from rest_framework.exceptions import NotFound
 from rest_framework.validators import UniqueTogetherValidator
 
-from .models import User
-from .utils import check_confimation_code, get_jwt_token
-from .utils import generate_and_send_confirmation_code
+from users.models import User
+from users.utils import check_confimation_code, get_jwt_token
 
 
 class SignUpSerializer(serializers.ModelSerializer):
     """Сериализатор данных для регистрации."""
-
-    def post(self, validated_data):
-        # создание пользователя
-        user = User.objects.create_user(
-            email=validated_data.get('email'),
-            username=validated_data.get('username'),
-            password=validated_data.get('password')
-        )
-
-        # генерация и отправка кода подтверждения
-        code = generate_and_send_confirmation_code(user, validated_data)
-
-        # сохранение кода подтверждения в поле confirmation_code модели User
-        user.confirmation_code = code
-        user.save()
-
-        return user
 
     class Meta:
         model = User
