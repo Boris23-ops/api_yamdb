@@ -13,14 +13,14 @@ from .serializers import (
     UserSerializer
 )
 from .permission import IsAdmin
-from .utils import generate_and_send_confrimation_code
+from .utils import generate_and_send_confirmation_code
 
 
 class UserViewSet(viewsets.ModelViewSet):
     """Вьюсет для работы с пользователями."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (IsAdmin,)
+    permission_classes = [IsAuthenticated, IsAdmin]
     lookup_field = 'username'
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('username',)
@@ -56,25 +56,28 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class SignUp(APIView):
     """Вью-функция для регистрации и подтвердения по почте."""
+
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        """Создание пользователя и отправка кода подтверждения."""
-        serializer = SignUpSerializer(data=self.request.data)
+        if User.objects.filter(
+            username=request.data.get('username'),
+            email=request.data.get('email')
+        ).exists():
+            generate_and_send_confirmation_code(request)
+            return Response(request.data, status=status.HTTP_200_OK)
+
+        serializer = SignUpSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            generate_and_send_confrimation_code(
-                user=user,
-                data=serializer.data
-            )
+            serializer.save(username=request.data.get('username'))
+            generate_and_send_confirmation_code(request)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(
-            serializer.errors, status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class Token(APIView):
     """Вьюсет для получения токена."""
+
     permission_classes = (AllowAny,)
 
     def post(self, request):

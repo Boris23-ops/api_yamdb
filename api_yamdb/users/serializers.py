@@ -4,10 +4,28 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from .models import User
 from .utils import check_confimation_code, get_jwt_token
+from .utils import generate_and_send_confirmation_code
 
 
 class SignUpSerializer(serializers.ModelSerializer):
     """Сериализатор данных для регистрации."""
+
+    def post(self, validated_data):
+        # создание пользователя
+        user = User.objects.create_user(
+            email=validated_data.get('email'),
+            username=validated_data.get('username'),
+            password=validated_data.get('password')
+        )
+
+        # генерация и отправка кода подтверждения
+        code = generate_and_send_confirmation_code(user, validated_data)
+
+        # сохранение кода подтверждения в поле confirmation_code модели User
+        user.confirmation_code = code
+        user.save()
+
+        return user
 
     class Meta:
         model = User
@@ -23,6 +41,7 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     def validate_username(self, value):
         """Валидация имени пользователя."""
+
         if value == 'me':
             raise serializers.ValidationError(
                 'Пожалуйста, не пытайтесь зарегистрировать пользователя '
@@ -32,11 +51,13 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 class TokenSerializer(serializers.Serializer):
     """Cериалайзер для получения токена."""
+
     username = serializers.CharField()
     token = serializers.SerializerMethodField()
 
     def get_token(self, obj):
         """Проверка кода подтверждения и получение JWT токена."""
+
         username = obj['username']
         user_queryset = User.objects.filter(username=username)
         if not user_queryset.exists():
@@ -62,6 +83,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     def validate_role(self, value):
         """Защита от изменения своей роли пользователем без админских прав."""
+
         request_user = self.context.get('request').user
         if (
             value
