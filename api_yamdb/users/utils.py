@@ -19,12 +19,10 @@ def generate_and_send_confirmation_code(request):
 
 def check_confimation_code(user, confirmation_code):
     """Проверка кода подтверждения."""
-
     return default_token_generator.check_token(user, confirmation_code)
 
 
 def get_jwt_token(user):
     """Получение JWT токена для пользователя."""
-
     refresh = RefreshToken.for_user(user)
     return str(refresh.access_token)

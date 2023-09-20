@@ -1,9 +1,6 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework import status, viewsets
-from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.pagination import PageNumberPagination
@@ -44,19 +41,16 @@ class UserViewSet(viewsets.ModelViewSet):
                 context={'request': self.request},
                 partial=True
             )
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data,
-                                status=status.HTTP_200_OK)
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
         serializer = self.get_serializer(self.object)
         return Response(serializer.data)
 
 
 class SignUp(APIView):
-    """Вью-функция для регистрации и подтвердения по почте."""
-
+    """Вью-функция для регистрации и подтверждения по почте."""
     permission_classes = (AllowAny,)
 
     def post(self, request):
@@ -69,11 +63,10 @@ class SignUp(APIView):
             return Response(request.data, status=status.HTTP_200_OK)
 
         serializer = SignUpSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(username=request.data.get('username'))
-            generate_and_send_confirmation_code(request)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(username=request.data.get('username'))
+        generate_and_send_confirmation_code(request)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class Token(APIView):

@@ -23,7 +23,7 @@ class User(AbstractUser):
     )
     role = models.CharField(
         'Роль',
-        max_length=20,
+        max_length=max(len(role) for role, _ in ROLE_CHOICES),
         choices=ROLE_CHOICES,
         default=USER
     )
@@ -48,15 +48,6 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == User.ADMIN
-
-
-@receiver(pre_save, sender=User)
-def auto_is_staff(sender, instance, *args, **kwargs):
-    """Авто присвоение флага is_staff пользователям с ролью 'admin'."""
-    if instance.role == User.ADMIN:
-        instance.is_staff = True
-    elif instance.role == User.USER or User.MODERATOR:
-        instance.is_staff = False
 
 
 @receiver(pre_save, sender=User)
