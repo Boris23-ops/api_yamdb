@@ -1,9 +1,8 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, status, viewsets
+from rest_framework import filters, viewsets
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.models import Category, Genre, Review, Title
@@ -17,7 +16,7 @@ from api.serializers import (
 )
 from api.filter import TitleFilter
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
-from api.mixins import ListCreateDestroyViewSet
+from api.mixins import ListCreateDestroyViewSet, UpdateNotAllowedMixin
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
@@ -32,13 +31,6 @@ class GenreViewSet(ListCreateDestroyViewSet):
 
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
-
-
-class UpdateNotAllowedMixin():
-    def update(self, request, *args, **kwargs):
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)
 
 
 class TitleViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
