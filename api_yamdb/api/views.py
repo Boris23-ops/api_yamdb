@@ -34,7 +34,14 @@ class GenreViewSet(ListCreateDestroyViewSet):
     serializer_class = GenreSerializer
 
 
-class TitleViewSet(viewsets.ModelViewSet):
+class UpdateNotAllowedMixin():
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT':
+            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return super().update(request, *args, **kwargs)
+
+
+class TitleViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     """Вьюсет Произведения"""
 
     queryset = Title.objects.all().annotate(
@@ -52,14 +59,8 @@ class TitleViewSet(viewsets.ModelViewSet):
             return TitleSerializer
         return TitleSaveSerializer
 
-    def update(self, request, *args, **kwargs):
-        """Обновляет экземпляр модели Title."""
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)
 
-
-class ReviewViewSet(viewsets.ModelViewSet):
+class ReviewViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     """Вьюсет Ревью"""
 
     serializer_class = ReviewSerializer
@@ -69,24 +70,19 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Возвращает queryset для получения ревью."""
-        title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, pk=title_id)
-        return title.reviews.all().order_by('pub_date')
+        return self.get_title().reviews.all().order_by('pub_date')
 
     def perform_create(self, serializer):
         """Создает новое ревью."""
+        serializer.save(author=self.request.user, title=self.get_title())
+
+    def get_title(self):
+        """Получает объект Title по title_id."""
         title_id = self.kwargs.get('title_id')
-        title = get_object_or_404(Title, pk=title_id)
-        serializer.save(author=self.request.user, title=title)
-
-    def update(self, request, *args, **kwargs):
-        """Обновляет ревью."""
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)
+        return get_object_or_404(Title, pk=title_id)
 
 
-class CommentViewSet(viewsets.ModelViewSet):
+class CommentViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     """Вьюсет Комментария"""
 
     permission_classes = (IsOwnerOrAdminOrReadOnly,
@@ -96,20 +92,18 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Возвращает queryset для получения комментариев."""
-        title_id = self.kwargs.get('title_id')
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, pk=review_id, title__id=title_id)
-        return review.comments.all().order_by('pub_date')
+        return self.get_review().comments.all().order_by('pub_date')
 
     def perform_create(self, serializer):
         """Создает новый комментарий."""
-        title_id = self.kwargs.get('title_id')
-        review_id = self.kwargs.get('review_id')
-        review = get_object_or_404(Review, pk=review_id, title__id=title_id)
-        serializer.save(author=self.request.user, review=review)
+        serializer.save(
+            author=self.request.user,
+            review=self.get_review()
+        )
 
-    def update(self, request, *args, **kwargs):
-        """Обновляет комментарий."""
-        if request.method == 'PUT':
-            return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
-        return super().update(request, *args, **kwargs)
+    def get_review(self):
+        """Получает объект ревью."""
+        return get_object_or_404(
+            Review, pk=self.kwargs.get('review_id'),
+            title__id=self.kwargs.get('title_id')
+        )

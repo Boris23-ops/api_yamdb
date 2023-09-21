@@ -26,5 +26,5 @@ class IsAdminOrReadOnly(permissions.BasePermission):
         """Проверяет, имеет ли пользователь разрешение
         на выполнение запроса."""
         return (request.method in permissions.SAFE_METHODS
-                or (request.user.is_authenticated and (request.user.is_admin
-                    or request.user.is_staff)))
+                or (request.user.is_authenticated
+                    and (request.user.is_admin)))
