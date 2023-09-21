@@ -24,7 +24,10 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleListSerializer(serializers.ListSerializer):
+    """Сериализатор списка объектов модели Title"""
+
     def to_representation(self, data):
+        """Преобразует список объектов модели Title в JSON"""
         return {
             'count': len(data),
             'next': None,
