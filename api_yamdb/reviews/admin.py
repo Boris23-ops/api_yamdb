@@ -1,31 +1,63 @@
 from django.contrib import admin
-from django.utils.safestring import mark_safe
-from .models import (Category, Comment, Genre, Review, Title)
+from .models import (Category, Comment,
+                     Genre, Review, Title
+                     )
 
 
-class GenreInline(admin.TabularInline):
-    model = Genre
+class ReviewAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'title',
+        'text',
+        'author',
+        'score',
+        'pub_date'
+    )
+    list_editable = ('text',)
+    search_fields = ('title', 'text',)
+
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'review',
+        'text',
+        'author',
+        'pub_date'
+    )
+    list_editable = ('text',)
+    search_fields = ('review', 'text',)
+
+
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'slug')
+
+    list_editable = ('name', 'slug')
+    search_fields = ('name', 'slug')
+
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name', 'slug')
+    list_editable = ('name', 'slug')
+    search_fields = ('name', 'slug')
 
 
 class TitleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'year', 'get_genres', 'get_categories')
-    list_filter = ('genres', 'categories')
-    search_fields = ('name', 'categories__name', 'genres__name')
+    list_display = (
+        'pk',
+        'name',
+        'year',
+        'description',
+        'category',
+    )
 
-    def get_genres(self, obj):
-        return mark_safe(', '.join([genre.name for genre in obj.genres.all()]))
-    get_genres.short_description = 'Жанры'
-
-    def get_categories(self, obj):
-        return mark_safe(', '.join(
-            [category.name for category in obj.categories.all()]
-        ))
-    get_categories.short_description = 'Категории'
-
-    inlines = [GenreInline]
+    list_editable = ('name', 'description', 'category', 'year')
+    search_fields = ('name', 'year', 'genre', 'category')
+    empty_value_display = '-пусто-'
 
 
-admin.site.register(Category)
+admin.site.register(Review, ReviewAdmin)
+admin.site.register(Comment, CommentAdmin)
+admin.site.register(Genre, GenreAdmin)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Title, TitleAdmin)
-admin.site.register(Review)
-admin.site.register(Comment)
