@@ -51,7 +51,7 @@ class Title(CommonFields):
         'Название',
         max_length=MAX_TEXT_LENGTH,
     )
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         'Год выпуска',
 
     )
@@ -125,7 +125,8 @@ class Comment(ComRevFilds):
     """Модель комментария"""
 
     review = models.ForeignKey(
-        Review, on_delete=models.CASCADE)
+        Review, on_delete=models.CASCADE
+    )
 
     class Meta:
         default_related_name = 'comments'
