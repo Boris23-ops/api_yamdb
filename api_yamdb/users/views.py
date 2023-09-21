@@ -1,14 +1,14 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
+from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.filters import OrderingFilter, SearchFilter
 
 from users.models import User
-from users.serializers import TokenSerializer, SignUpSerializer, UserSerializer
 from users.permission import IsAdmin
+from users.serializers import SignUpSerializer, TokenSerializer, UserSerializer
 from users.utils import generate_and_send_confirmation_code
 
 
@@ -67,6 +67,10 @@ class SignUp(APIView):
         serializer.save(username=request.data.get('username'))
         generate_and_send_confirmation_code(request)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def perform_create(self, serializer):
+        """Сохраняет сериализатор с указанием роли пользователя."""
+        serializer.save(role=self.request.user.role)
 
 
 class Token(APIView):

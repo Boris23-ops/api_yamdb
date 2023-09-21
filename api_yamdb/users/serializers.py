@@ -82,4 +82,8 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError(
                 'Пользователь с таким именем уже существует.'
             )
+        if value == 'me':
+            raise serializers.ValidationError(
+                'Недопустимое значение для роли.'
+            )
         return value
