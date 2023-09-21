@@ -71,15 +71,10 @@ class SignUp(APIView):
 
 class Token(APIView):
     """Вьюсет для получения токена."""
-
     permission_classes = (AllowAny,)
 
     def post(self, request):
         """POST-запрос на получение JWT-токена."""
         serializer = TokenSerializer(data=self.request.data)
-        if serializer.is_valid():
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(
-            serializer.errors,
-            status=status.HTTP_400_BAD_REQUEST
-        )
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

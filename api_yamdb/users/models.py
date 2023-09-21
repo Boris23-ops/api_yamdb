@@ -10,9 +10,9 @@ class User(AbstractUser):
     ADMIN = 'admin'
 
     ROLE_CHOICES = [
-        (USER, 'user'),
-        (MODERATOR, 'moderator'),
-        (ADMIN, 'admin'),
+        (USER, 'Пользователь'),
+        (MODERATOR, 'Модератор'),
+        (ADMIN, 'Администратор'),
     ]
     email = models.EmailField(unique=True)
     bio = models.TextField(
@@ -33,11 +33,7 @@ class User(AbstractUser):
                 fields=('email', 'username'),
             ),
         ]
-        ordering = ['username']
-
-    @property
-    def is_user(self):
-        return self.role == User.USER or self.role == User.ADMIN
+        ordering = ('username',)
 
     @property
     def is_moderator(self):
@@ -45,4 +41,4 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
-        return self.role == User.ADMIN
+        return self.role == User.ADMIN or self.is_superuser

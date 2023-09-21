@@ -70,10 +70,6 @@ class UserSerializer(serializers.ModelSerializer):
     def validate_role(self, value):
         """Защита от изменения своей роли пользователем без админских прав."""
         request_user = self.context.get('request').user
-        if value == 'me':
-            raise serializers.ValidationError(
-                'Недопустимое значение для роли.'
-            )
         if value and request_user and not (
             request_user.is_admin
         ):
