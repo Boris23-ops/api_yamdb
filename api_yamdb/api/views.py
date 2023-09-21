@@ -2,10 +2,8 @@ from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
-from reviews.models import Category, Genre, Review, Title
 from api.serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -17,6 +15,7 @@ from api.serializers import (
 from api.filter import TitleFilter
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 from api.mixins import ListCreateDestroyViewSet, UpdateNotAllowedMixin
+from reviews.models import Category, Genre, Review, Title
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
@@ -43,7 +42,6 @@ class TitleViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend, filters.OrderingFilter)
     filterset_class = TitleFilter
     ordering_fields = ('rating',)
-    pagination_class = PageNumberPagination
 
     def get_serializer_class(self):
         """Возвращает класс сериализатора в зависимости от действия."""
@@ -58,7 +56,6 @@ class ReviewViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = (IsOwnerOrAdminOrReadOnly,
                           IsAuthenticatedOrReadOnly,)
-    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         """Возвращает queryset для получения ревью."""
@@ -80,7 +77,6 @@ class CommentViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrAdminOrReadOnly,
                           IsAuthenticatedOrReadOnly,)
     serializer_class = CommentSerializer
-    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         """Возвращает queryset для получения комментариев."""

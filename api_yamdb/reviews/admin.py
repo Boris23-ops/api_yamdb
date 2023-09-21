@@ -1,9 +1,9 @@
 from django.contrib import admin
-from .models import (Category, Comment,
-                     Genre, Review, Title
-                     )
+from django.utils.text import format_lazy
+from .models import Category, Comment, Genre, Review, Title
 
 
+@admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
@@ -17,6 +17,7 @@ class ReviewAdmin(admin.ModelAdmin):
     search_fields = ('title', 'text',)
 
 
+@admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
@@ -29,6 +30,7 @@ class CommentAdmin(admin.ModelAdmin):
     search_fields = ('review', 'text',)
 
 
+@admin.register(Genre)
 class GenreAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'slug')
 
@@ -36,12 +38,14 @@ class GenreAdmin(admin.ModelAdmin):
     search_fields = ('name', 'slug')
 
 
+@admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'slug')
     list_editable = ('name', 'slug')
     search_fields = ('name', 'slug')
 
 
+@admin.register(Title)
 class TitleAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
@@ -55,9 +59,9 @@ class TitleAdmin(admin.ModelAdmin):
     search_fields = ('name', 'year', 'genre', 'category')
     empty_value_display = '-пусто-'
 
+    def get_genres_list(self, obj):
+        return format_lazy(', '.join(
+            [genre.name for genre in obj.genre.all()]
+        ))
 
-admin.site.register(Review, ReviewAdmin)
-admin.site.register(Comment, CommentAdmin)
-admin.site.register(Genre, GenreAdmin)
-admin.site.register(Category, CategoryAdmin)
-admin.site.register(Title, TitleAdmin)
+    get_genres_list.short_description = 'Жанры'
