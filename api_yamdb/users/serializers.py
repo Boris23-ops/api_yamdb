@@ -72,7 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
                 'Недопустимое значение для роли.'
             )
         if value and request_user and not (
-            request_user.is_admin or request_user.is_staff
+            request_user.is_admin
         ):
             return request_user.role
         return value
