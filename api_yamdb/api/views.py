@@ -1,9 +1,10 @@
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import filters, mixins, status, viewsets
+from rest_framework import filters, status, viewsets
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from reviews.models import Category, Genre, Review, Title
 from api.serializers import (
@@ -16,20 +17,7 @@ from api.serializers import (
 )
 from api.filter import TitleFilter
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
-
-
-class ListCreateDestroyViewSet(
-    mixins.ListModelMixin,
-    mixins.CreateModelMixin,
-    mixins.DestroyModelMixin,
-    viewsets.GenericViewSet
-):
-    """Вьюсет для списка, создания и удаления модели."""
-
-    permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
-    search_fields = ('name',)
-    lookup_field = 'slug'
+from api.mixins import ListCreateDestroyViewSet
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
@@ -76,7 +64,8 @@ class ReviewViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     """Вьюсет Ревью"""
 
     serializer_class = ReviewSerializer
-    permission_classes = (IsOwnerOrAdminOrReadOnly, )
+    permission_classes = (IsOwnerOrAdminOrReadOnly,
+                          IsAuthenticatedOrReadOnly,)
     pagination_class = PageNumberPagination
 
     def get_queryset(self):
@@ -96,7 +85,8 @@ class ReviewViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
 class CommentViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
     """Вьюсет Комментария"""
 
-    permission_classes = (IsOwnerOrAdminOrReadOnly, )
+    permission_classes = (IsOwnerOrAdminOrReadOnly,
+                          IsAuthenticatedOrReadOnly,)
     serializer_class = CommentSerializer
     pagination_class = PageNumberPagination
 

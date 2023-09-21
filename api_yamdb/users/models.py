@@ -1,7 +1,5 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models.signals import pre_save
-from django.dispatch import receiver
 
 
 class User(AbstractUser):
@@ -35,11 +33,11 @@ class User(AbstractUser):
                 fields=('email', 'username'),
             ),
         ]
-        ordering = ['id']
+        ordering = ['username']
 
     @property
     def is_user(self):
-        return self.role == User.USER
+        return self.role == User.USER or self.role == User.ADMIN
 
     @property
     def is_moderator(self):
@@ -48,10 +46,3 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         return self.role == User.ADMIN
-
-
-@receiver(pre_save, sender=User)
-def auto_admin_for_superuser(sender, instance, *args, **kwargs):
-    """Авто присвоение роли 'admin' суперюзерам."""
-    if instance.is_superuser:
-        instance.role = User.ADMIN

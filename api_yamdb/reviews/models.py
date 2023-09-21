@@ -1,3 +1,4 @@
+import datetime as dt
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
@@ -51,9 +52,9 @@ class Title(CommonFields):
         'Название',
         max_length=MAX_TEXT_LENGTH,
     )
-    year = models.IntegerField(
+    year = models.PositiveSmallIntegerField(
         'Год выпуска',
-
+        validators=[MaxValueValidator(dt.datetime.now().year)]
     )
     description = models.CharField(
         'Описание',
@@ -74,6 +75,9 @@ class Title(CommonFields):
     class Meta:
         default_related_name = 'titles'
         verbose_name = 'Произведение'
+        indexes = [
+            models.Index(fields=['year']),
+        ]
 
 
 class ComRevFilds(models.Model):
@@ -125,7 +129,8 @@ class Comment(ComRevFilds):
     """Модель комментария"""
 
     review = models.ForeignKey(
-        Review, on_delete=models.CASCADE)
+        Review, on_delete=models.CASCADE
+    )
 
     class Meta:
         default_related_name = 'comments'

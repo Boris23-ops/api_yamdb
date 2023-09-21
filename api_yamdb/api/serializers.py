@@ -1,3 +1,4 @@
+import datetime as dt
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.exceptions import NotFound, ValidationError
@@ -46,12 +47,20 @@ class TitleSerializer(serializers.ModelSerializer):
 
     category = CategorySerializer(read_only=True)
     genre = GenreSerializer(many=True, read_only=True)
-    rating = serializers.FloatField(read_only=True)
+    rating = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = Title
         fields = ('id', 'name', 'year', 'rating',
                   'description', 'genre', 'category')
+
+    def validate_year(self, value):
+        year = dt.date.today().year
+        if year < value:
+            raise serializers.ValidationError(
+                detail='Год произведения больше настояшего '
+            )
+        return value
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -72,11 +81,10 @@ class ReviewSerializer(serializers.ModelSerializer):
         title_id = self.context['request'].parser_context['kwargs'].get(
             'title_id')
         author = self.context['request'].user
-        review = Review.objects.filter(
+        if Review.objects.filter(
             title__id=title_id,
             author=author
-        ).exists()
-        if review:
+        ).exists():
             raise ValidationError(
                 detail=(f'Отзыв {author} на произведения с '
                         f'id={title_id} уже существует')
