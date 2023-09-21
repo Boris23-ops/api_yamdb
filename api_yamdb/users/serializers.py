@@ -51,8 +51,11 @@ class TokenSerializer(serializers.Serializer):
         if not check_confimation_code(
                 user=user,
                 confirmation_code=confirmation_code):
-            raise serializers.ValidationError('Неверный код подтверждения')
+            raise serializers.ValidationError('Неверный код подтверждени')
         return get_jwt_token(user=user)
+    
+    def to_representation(self, instance):
+        return {'token': self.get_token(instance)}
 
 
 class UserSerializer(serializers.ModelSerializer):
