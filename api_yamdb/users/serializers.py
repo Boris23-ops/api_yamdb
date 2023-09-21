@@ -60,21 +60,27 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('username', 'email', 'first_name', 'last_name', 'bio',
-                  'role')
+        fields = (
+            'username', 'email', 'first_name', 'last_name', 'bio', 'role'
+        )
 
     def validate_role(self, value):
         """Защита от изменения своей роли пользователем без админских прав."""
         request_user = self.context.get('request').user
-
         if value == 'me':
             raise serializers.ValidationError(
                 'Недопустимое значение для роли.'
             )
-
         if value and request_user and not (
             request_user.is_admin or request_user.is_staff
         ):
             return request_user.role
+        return value
 
+    def validate_username(self, value):
+        """Валидация уникальности имени пользователя."""
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError(
+                'Пользователь с таким именем уже существует.'
+            )
         return value
