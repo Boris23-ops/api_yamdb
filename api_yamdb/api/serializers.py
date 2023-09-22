@@ -49,11 +49,6 @@ class TitleSaveSerializer(serializers.ModelSerializer):
             )
         return value
 
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['rating'] = instance.rating_average
-        return representation
-
 
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор для модели Title."""
