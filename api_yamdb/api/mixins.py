@@ -20,6 +20,8 @@ class ListCreateDestroyViewSet(
 
 
 class UpdateNotAllowedMixin():
+    """Mixin, который запрещает обновление объектов."""
+
     def update(self, request, *args, **kwargs):
         if request.method == 'PUT':
             return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
