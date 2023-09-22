@@ -1,6 +1,7 @@
 import datetime as dt
 from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from .constants import MAX_SLUG_LENGTH, MAX_TEXT_LENGTH, MAX_TITLE_LENGTH
@@ -48,7 +49,6 @@ class Title(models.Model):
     )
     year = models.PositiveSmallIntegerField(
         'Год выпуска',
-        validators=[MaxValueValidator(dt.datetime.now().year)]
     )
     description = models.CharField(
         'Описание',
@@ -73,6 +73,11 @@ class Title(models.Model):
             models.Index(fields=['year']),
         ]
         ordering = ('name',)
+
+    def validater_year(self):
+        """Валидатор для поля year"""
+        if self.year > dt.datetime.now().year:
+            raise ValidationError('Год произведения больше текущего года')
 
 
 class ComRevFilds(models.Model):

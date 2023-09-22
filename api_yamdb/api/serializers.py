@@ -41,6 +41,7 @@ class TitleSaveSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
     def validate_year(self, value):
+        """Валидатор года выпуска"""
         year = dt.date.today().year
         if year < value:
             raise serializers.ValidationError(
@@ -49,15 +50,15 @@ class TitleSaveSerializer(serializers.ModelSerializer):
         return value
 
     def to_representation(self, instance):
+        """Методот вывода информации при Get запросе"""
         representation = super().to_representation(instance)
         genre_data = instance.genre.all()
         category_data = instance.category
         representation['genre'] = [
             {'name': genre.name, 'slug': genre.slug} for genre in genre_data
         ]
-        representation['category'] = [
-            {'name': category_data.name, 'slug': category_data.slug}
-        ]
+        representation['category'] = {'name': category_data.name,
+                                      'slug': category_data.slug}
         return representation
 
 
