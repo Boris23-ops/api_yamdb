@@ -82,7 +82,7 @@ class Title(models.Model):
         ]
         ordering = ('name',)
 
-    def validater_year(self):
+    def clean(self):
         """Валидатор для поля year"""
         if self.year > dt.datetime.now().year:
             raise ValidationError('Год произведения больше текущего года')
