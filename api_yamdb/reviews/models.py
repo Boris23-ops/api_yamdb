@@ -35,9 +35,17 @@ class CommonFields(models.Model):
 class Category(CommonFields):
     """Модель категории"""
 
+    class Meta(CommonFields.Meta):
+        default_related_name = 'category'
+        verbose_name = 'Категория'
+
 
 class Genre(CommonFields):
     """Модель жанра"""
+
+    class Meta(CommonFields.Meta):
+        default_related_name = 'genre'
+        verbose_name = 'Жанр'
 
 
 class Title(models.Model):
