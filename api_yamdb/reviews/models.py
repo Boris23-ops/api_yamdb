@@ -34,13 +34,9 @@ class CommonFields(models.Model):
 class Category(CommonFields):
     """Модель категории"""
 
-    ...
-
 
 class Genre(CommonFields):
     """Модель жанра"""
-
-    ...
 
 
 class Title(models.Model):
