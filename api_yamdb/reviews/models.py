@@ -3,7 +3,11 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from api.constants import MAX_SLUG_LENGTH, MAX_TEXT_LENGTH, MAX_TITLE_LENGTH
+from reviews.constants import (
+    MAX_SLUG_LENGTH,
+    MAX_TEXT_LENGTH,
+    MAX_TITLE_LENGTH
+)
 
 User = get_user_model()
 
@@ -93,11 +97,11 @@ class ComRevFilds(models.Model):
     pub_date = models.DateTimeField(
         'Дата публикации',
         auto_now_add=True,
+        db_index=True
     )
 
     class Meta:
         abstract = True
-        ordering = ('pub_date',)
 
 
 class Review(ComRevFilds):
@@ -119,6 +123,7 @@ class Review(ComRevFilds):
             ),
         )
         default_related_name = 'reviews'
+        ordering = ('pub_date',)
         verbose_name = 'Ревью'
 
     def __str__(self):
@@ -134,6 +139,7 @@ class Comment(ComRevFilds):
 
     class Meta:
         default_related_name = 'comments'
+        ordering = ('pub_date',)
         verbose_name = 'Комментарий'
 
     def __str__(self):

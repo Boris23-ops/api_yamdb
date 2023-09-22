@@ -59,7 +59,7 @@ class ReviewViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Возвращает queryset для получения ревью."""
-        return self.get_title().reviews.all().order_by('pub_date')
+        return self.get_title().reviews.all()
 
     def perform_create(self, serializer):
         """Создает новое ревью."""
@@ -80,7 +80,7 @@ class CommentViewSet(UpdateNotAllowedMixin, viewsets.ModelViewSet):
 
     def get_queryset(self):
         """Возвращает queryset для получения комментариев."""
-        return self.get_review().comments.all().order_by('pub_date')
+        return self.get_review().comments.all()
 
     def perform_create(self, serializer):
         """Создает новый комментарий."""
