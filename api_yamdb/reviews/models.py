@@ -3,11 +3,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-from reviews.constants import (
-    MAX_SLUG_LENGTH,
-    MAX_TEXT_LENGTH,
-    MAX_TITLE_LENGTH
-)
+from .constants import MAX_SLUG_LENGTH, MAX_TEXT_LENGTH, MAX_TITLE_LENGTH
+
 
 User = get_user_model()
 
