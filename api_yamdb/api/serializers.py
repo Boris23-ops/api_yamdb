@@ -26,11 +26,11 @@ class GenreSerializer(serializers.ModelSerializer):
 class TitleSaveSerializer(serializers.ModelSerializer):
     """Сериализатор Произведения"""
 
-    category = SlugRelatedField(
+    category = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all(),
     )
-    genre = SlugRelatedField(
+    genre = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Genre.objects.all(),
         many=True
@@ -38,8 +38,7 @@ class TitleSaveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Title
-        fields = ('id', 'name', 'year',
-                  'description', 'genre', 'category')
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category')
 
     def validate_year(self, value):
         year = dt.date.today().year
@@ -48,6 +47,18 @@ class TitleSaveSerializer(serializers.ModelSerializer):
                 detail='Год произведения больше настояшего '
             )
         return value
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        genre_data = instance.genre.all()
+        category_data = instance.category
+        representation['genre'] = [
+            {'name': genre.name, 'slug': genre.slug} for genre in genre_data
+        ]
+        representation['category'] = [
+            {'name': category_data.name, 'slug': category_data.slug}
+        ]
+        return representation
 
 
 class TitleSerializer(serializers.ModelSerializer):

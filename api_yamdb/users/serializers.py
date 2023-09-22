@@ -53,9 +53,6 @@ class TokenSerializer(serializers.Serializer):
                 confirmation_code=confirmation_code):
             raise serializers.ValidationError('Неверный код подтверждени')
         return get_jwt_token(user=user)
-    
-    def to_representation(self, instance):
-        return {'token': self.get_token(instance)}
 
     def to_representation(self, instance):
         return {'token': self.get_token(instance)}
