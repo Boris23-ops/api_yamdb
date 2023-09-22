@@ -17,6 +17,11 @@ class CommonFields(models.Model):
         max_length=MAX_TEXT_LENGTH,
         default=None
     )
+    slug = models.SlugField(
+        'slug',
+        max_length=MAX_SLUG_LENGTH,
+        unique=True
+    )
 
     class Meta:
         abstract = True
@@ -29,24 +34,16 @@ class CommonFields(models.Model):
 class Category(CommonFields):
     """Модель категории"""
 
-    slug = models.SlugField(
-        'slug',
-        max_length=MAX_SLUG_LENGTH,
-        unique=True
-    )
+    ...
 
 
 class Genre(CommonFields):
     """Модель жанра"""
 
-    slug = models.SlugField(
-        'slug',
-        max_length=MAX_SLUG_LENGTH,
-        unique=True
-    )
+    ...
 
 
-class Title(CommonFields):
+class Title(models.Model):
     """Модель произведения"""
 
     name = models.CharField(
@@ -79,6 +76,7 @@ class Title(CommonFields):
         indexes = [
             models.Index(fields=['year']),
         ]
+        ordering = ('name',)
 
 
 class ComRevFilds(models.Model):
@@ -99,6 +97,7 @@ class ComRevFilds(models.Model):
 
     class Meta:
         abstract = True
+        ordering = ('pub_date',)
 
 
 class Review(ComRevFilds):
@@ -112,7 +111,7 @@ class Review(ComRevFilds):
         validators=[MinValueValidator(1), MaxValueValidator(10)]
     )
 
-    class Meta:
+    class Meta(ComRevFilds.Meta):
         constraints = (
             models.UniqueConstraint(
                 fields=('author', 'title'),
@@ -120,11 +119,10 @@ class Review(ComRevFilds):
             ),
         )
         default_related_name = 'reviews'
-        ordering = ('pub_date',)
         verbose_name = 'Ревью'
 
     def __str__(self):
-        return f'Отзыв {self.author} на {self.title.name}'
+        return f'Отзыв {self.author} на {self.title}'
 
 
 class Comment(ComRevFilds):
@@ -134,10 +132,12 @@ class Comment(ComRevFilds):
         Review, on_delete=models.CASCADE
     )
 
-    class Meta:
+    class Meta(ComRevFilds.Meta):
         default_related_name = 'comments'
-        ordering = ('pub_date',)
         verbose_name = 'Комментарий'
 
     def __str__(self):
-        return self.text[:MAX_TITLE_LENGTH]
+        return (
+            f'Комментарий {self.author} на отзыв {self.review.author} '
+            f'на {self.review.title}'
+        )
