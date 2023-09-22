@@ -23,19 +23,6 @@ class GenreSerializer(serializers.ModelSerializer):
         model = Genre
 
 
-class TitleListSerializer(serializers.ListSerializer):
-    """Сериализатор списка объектов модели Title"""
-
-    def to_representation(self, data):
-        """Преобразует список объектов модели Title в JSON"""
-        return {
-            'count': len(data),
-            'next': None,
-            'previous': None,
-            'results': [TitleSerializer(item).data for item in data]
-        }
-
-
 class TitleSaveSerializer(serializers.ModelSerializer):
     """Сериализатор Произведения"""
 
@@ -53,7 +40,6 @@ class TitleSaveSerializer(serializers.ModelSerializer):
         model = Title
         fields = ('id', 'name', 'year',
                   'description', 'genre', 'category')
-        list_serializer_class = TitleListSerializer
 
     def validate_year(self, value):
         year = dt.date.today().year
@@ -62,6 +48,11 @@ class TitleSaveSerializer(serializers.ModelSerializer):
                 detail='Год произведения больше настояшего '
             )
         return value
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['rating'] = instance.rating_average
+        return representation
 
 
 class TitleSerializer(serializers.ModelSerializer):
