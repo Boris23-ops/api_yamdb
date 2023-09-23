@@ -63,7 +63,8 @@ class Title(models.Model):
         'Описание',
         blank=True,
         null=True,
-        max_length=MAX_TEXT_LENGTH
+        max_length=MAX_TEXT_LENGTH,
+        default='',
     )
     genre = models.ManyToManyField(
         Genre,
