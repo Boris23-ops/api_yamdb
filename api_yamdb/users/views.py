@@ -35,16 +35,14 @@ class UserViewSet(viewsets.ModelViewSet):
         """Доступ пользователя к своему профилю."""
         self.object = User.objects.get(username=self.request.user.username)
         if request.method == 'PATCH':
-            data = self.request.data.copy()
-            data['role'] = self.request.user.role
             serializer = self.get_serializer(
                 self.object,
-                data=data,
+                data=self.request.data,
                 context={'request': self.request},
                 partial=True
             )
             serializer.is_valid(raise_exception=True)
-            serializer.save()
+            serializer.save(role=self.request.user.role)
             return Response(serializer.data, status=status.HTTP_200_OK)
 
         serializer = self.get_serializer(self.object)
