@@ -1,5 +1,6 @@
 import datetime as dt
 
+from django.db.models import Avg
 from rest_framework import serializers
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.relations import SlugRelatedField
@@ -22,6 +23,19 @@ class GenreSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('name', 'slug')
         model = Genre
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    """Сериализатор для модели Title."""
+
+    category = CategorySerializer(read_only=True)
+    genre = GenreSerializer(many=True, read_only=True)
+    rating = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Title
+        fields = ('id', 'name', 'year', 'rating',
+                  'description', 'genre', 'category')
 
 
 class TitleSaveSerializer(serializers.ModelSerializer):
@@ -52,21 +66,11 @@ class TitleSaveSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         """Методот вывода информации при Get запросе"""
-        representation = super().to_representation(instance)
+        representation = TitleSerializer().to_representation(instance)
+        representation['rating'] = instance.reviews.aggregate(
+            Avg('score')
+        )['score__avg']
         return representation
-
-
-class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор для модели Title."""
-
-    category = CategorySerializer(read_only=True)
-    genre = GenreSerializer(many=True, read_only=True)
-    rating = serializers.IntegerField(read_only=True)
-
-    class Meta:
-        model = Title
-        fields = ('id', 'name', 'year', 'rating',
-                  'description', 'genre', 'category')
 
 
 class ReviewSerializer(serializers.ModelSerializer):
