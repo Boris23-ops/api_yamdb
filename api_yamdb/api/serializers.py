@@ -53,13 +53,6 @@ class TitleSaveSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         """Методот вывода информации при Get запросе"""
         representation = super().to_representation(instance)
-        genre_data = instance.genre.all()
-        category_data = instance.category
-        representation['genre'] = [
-            {'name': genre.name, 'slug': genre.slug} for genre in genre_data
-        ]
-        representation['category'] = {'name': category_data.name,
-                                      'slug': category_data.slug}
         return representation
 
 
