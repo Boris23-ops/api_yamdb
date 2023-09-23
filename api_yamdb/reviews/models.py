@@ -1,9 +1,9 @@
 import datetime as dt
 
 from django.contrib.auth import get_user_model
-from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.db import models
 
 from .constants import MAX_TEXT_LENGTH, MAX_TITLE_LENGTH, MAX_SLUG_LENGTH
 
