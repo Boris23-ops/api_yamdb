@@ -4,6 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
+from api.filter import TitleFilter
 from api.serializers import (
     CategorySerializer,
     CommentSerializer,
@@ -12,10 +13,9 @@ from api.serializers import (
     TitleSaveSerializer,
     TitleSerializer,
 )
-from api.filter import TitleFilter
-from api.permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 from api.mixins import ListCreateDestroyViewSet, UpdateNotAllowedMixin
 from reviews.models import Category, Genre, Review, Title
+from api.permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):

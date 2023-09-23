@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.text import format_lazy
+
 from .models import Category, Comment, Genre, Review, Title
 
 
