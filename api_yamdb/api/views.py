@@ -5,17 +5,14 @@ from rest_framework import filters, viewsets
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from api.filter import TitleFilter
-from api.serializers import (
-    CategorySerializer,
-    CommentSerializer,
-    GenreSerializer,
-    ReviewSerializer,
-    TitleSaveSerializer,
-    TitleSerializer,
-)
 from api.mixins import ListCreateDestroyViewSet, UpdateNotAllowedMixin
-from reviews.models import Category, Genre, Review, Title
 from api.permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
+from api.serializers import (
+    CategorySerializer, CommentSerializer,
+    GenreSerializer, ReviewSerializer,
+    TitleSaveSerializer, TitleSerializer
+)
+from reviews.models import Category, Genre, Review, Title
 
 
 class CategoryViewSet(ListCreateDestroyViewSet):
