@@ -67,15 +67,6 @@ class UserSerializer(serializers.ModelSerializer):
             'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         )
 
-    def validate_role(self, value):
-        """Защита от изменения своей роли пользователем без админских прав."""
-        request_user = self.context.get('request').user
-        if value and request_user and not (
-            request_user.is_admin
-        ):
-            return request_user.role
-        return value
-
     def validate_username(self, value):
         """Валидация уникальности имени пользователя."""
         if User.objects.filter(username=value).exists():
