@@ -1,4 +1,13 @@
 # YaMDB
+### Стек технологий
+
+[![Python](https://img.shields.io/badge/-Python-464646?style=flat&logo=Python&logoColor=56C0C0&color=008080)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/-Django-464646?style=flat&logo=Django&logoColor=56C0C0&color=008080)](https://www.djangoproject.com/)
+[![Django REST Framework](https://img.shields.io/badge/-Django%20REST%20Framework-464646?style=flat&logo=Django%20REST%20Framework&logoColor=56C0C0&color=008080)](https://www.django-rest-framework.org/)
+- requests
+- PyJWT
+- djangorestframework-simplejwt
+- django-filter
 
 ## Описание
 
@@ -17,15 +26,6 @@
 3. Модератор (moderator) — те же права, что и у Аутентифицированного пользователя плюс право удалять любые отзывы и комментарии.
 4. Администратор (admin) — полные права на управление всем контентом проекта. Может создавать и удалять произведения, категории и жанры. Может назначать роли пользователям.
 5. Суперюзер Django — обладет правами администратора (admin)
-
-### Стек технологий
-
-- requests
-- Django
-- djangorestframework
-- PyJWT
-- djangorestframework-simplejwt
-- django-filter
 
 ### Документация API
 
